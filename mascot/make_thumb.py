@@ -37,6 +37,13 @@ def draw_text_with_outline(draw, xy, text, font, fill, outline_fill, outline_wid
 
 def make_thumbnail(title, subtitle="", output_path="thumb.png"):
     base = Image.open(BASE_IMG).convert("RGB")
+    # 비율 유지: 중앙 크롭 후 리사이즈 (늘어나지 않게)
+    w, h = base.size
+    if w != h:
+        side = min(w, h)
+        left = (w - side) // 2
+        top = (h - side) // 2
+        base = base.crop((left, top, left + side, top + side))
     if base.size != (SIZE, SIZE):
         base = base.resize((SIZE, SIZE), Image.LANCZOS)
 
