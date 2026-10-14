@@ -88,19 +88,27 @@ def make_thumbnail(title, subtitle="", output_path="thumb.png"):
     y_cursor = SIZE - 120 - len(lines) * 110
     if subtitle:
         y_cursor -= 80
+    # backing band behind title+subtitle for contrast
+    band_top = y_cursor - 28
+    band_bottom = SIZE - 40
+    band = Image.new("RGBA", base.size, (0, 0, 0, 0))
+    bdraw = ImageDraw.Draw(band)
+    bdraw.rounded_rectangle([48, band_top, SIZE - 48, band_bottom], radius=28, fill=(10, 15, 40, 140))
+    base = Image.alpha_composite(base.convert("RGBA"), band).convert("RGB")
+    draw = ImageDraw.Draw(base)
 
     for line in lines:
         tb = draw.textbbox((0, 0), line, font=font_title)
         tw = tb[2] - tb[0]
         x = (SIZE - tw) // 2
-        draw_text_with_outline(draw, (x, y_cursor), line, font_title, WHITE, NAVY, 4)
+        draw_text_with_outline(draw, (x, y_cursor), line, font_title, WHITE, NAVY, 6)
         y_cursor += 110
 
     if subtitle:
         sb = draw.textbbox((0, 0), subtitle, font=font_sub)
         sw = sb[2] - sb[0]
         x = (SIZE - sw) // 2
-        draw_text_with_outline(draw, (x, y_cursor + 10), subtitle, font_sub, YELLOW, NAVY, 3)
+        draw_text_with_outline(draw, (x, y_cursor + 10), subtitle, font_sub, YELLOW, NAVY, 4)
 
     base.save(output_path, "PNG")
     print(f"saved: {output_path}")
